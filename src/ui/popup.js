@@ -79,6 +79,7 @@ export default class Popup extends Evented {
     _closeButton: HTMLElement;
     _tip: HTMLElement;
     _lngLat: LngLat;
+    _trackCursor: Boolean;
     _pos: ?Point;
 
     constructor(options: PopupOptions) {
@@ -95,10 +96,18 @@ export default class Popup extends Evented {
      */
     addTo(map: Map) {
         this._map = map;
-        this._map.on('move', this._update);
+
         if (this.options.closeOnClick) {
             this._map.on('click', this._onClickClose);
+        };
+
+        if (this._trackCursor) {
+            this._map.on('mousemove', (e) =>{this._update(e.point)});
+            this._map.on('touchmove', (e) =>{this._update(e.point)});
         }
+
+        else this._map.on('move', this._update);
+
         this._map.on('remove', this.remove);
         this._update();
 
@@ -145,6 +154,8 @@ export default class Popup extends Evented {
             this._map.off('move', this._update);
             this._map.off('click', this._onClickClose);
             this._map.off('remove', this.remove);
+            this._map.off('mousemove');
+            this._map.off('touchmove');
             delete this._map;
         }
 
@@ -184,7 +195,33 @@ export default class Popup extends Evented {
     setLngLat(lnglat: LngLatLike) {
         this._lngLat = LngLat.convert(lnglat);
         this._pos = null;
+
+        if (this._map) {
+            this._map.on('move', this._update);
+            this._map.off('mousemove')
+            this._map.off('touchmove')
+        }
+
+        this._trackCursor = false;
+
         this._update();
+        return this;
+    }
+
+    /**
+     * Tracks the popup to the cursor position. replaces the setLngLat behavior
+     *
+     * @returns {Popup} `this`
+     */
+    trackCursor() {
+        this._trackCursor = true;
+        this._pos = null;
+        if (this._map) {
+            this._map.off('move', this._update);
+            this._map.on('mousemove', (e) =>{this._update(e.point)});
+            this._map.on('touchmove', (e) =>{this._update(e.point)});
+        }
+
         return this;
     }
 
@@ -268,8 +305,8 @@ export default class Popup extends Evented {
         }
     }
 
-    _update() {
-        if (!this._map || !this._lngLat || !this._content) { return; }
+    _update(cursor: PointLike) {
+        if (!this._map || !this._lngLat && !this._trackCursor || !this._content) { return; }
 
         if (!this._container) {
             this._container = DOM.create('div', 'mapboxgl-popup', this._map.getContainer());
@@ -282,11 +319,13 @@ export default class Popup extends Evented {
             }
         }
 
-        if (this._map.transform.renderWorldCopies) {
+        if (this._map.transform.renderWorldCopies && !this._trackCursor) {
             this._lngLat = smartWrap(this._lngLat, this._pos, this._map.transform);
         }
 
-        const pos = this._pos = this._map.project(this._lngLat);
+        if (this._trackCursor && !cursor) return;
+
+        const pos = this._pos = this._trackCursor && cursor ? cursor : this._map.project(this._lngLat);
 
         let anchor: ?Anchor = this.options.anchor;
         const offset = normalizeOffset(this.options.offset);
