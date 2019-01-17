@@ -107,7 +107,7 @@ export default class Popup extends Evented {
             this._map.on('mousemove', (e) => {this._update(e.point)});
             this._map.on('touchmove', (e) => {this._update(e.point)});
             this._map.on('mouseout', () => {DOM.setDisplay(this._container, `none`)});
-            this._map.on('mouseover', () => {DOM.setDisplay(this._container, `flex`)});
+            this._map.on('mouseover', () => {DOM.setDisplay(this._container, ``)});
         }
 
         else this._map.on('move', this._update);
