@@ -266,6 +266,7 @@ export const getImage = function(requestParameters: RequestParameters, callback:
       advanceImageRequestQueue();
       console.log('img', img);
       callback(null, img);
+      worker.terminate();
     });
     const request = new window.AbortController().abort();
 
