@@ -96,20 +96,21 @@ export default class Popup extends Evented {
      */
     addTo(map: Map) {
         this._map = map;
-
         if (this.options.closeOnClick) {
             this._map.on('click', this._onClickClose);
-        };
-
-        if (this._trackCursor) {
-            this._map.on('mousemove', (e) =>{this._update(e.point)});
-            this._map.on('touchmove', (e) =>{this._update(e.point)});
         }
-
-        else this._map.on('move', this._update);
 
         this._map.on('remove', this.remove);
         this._update();
+
+        if (this._trackCursor) {
+            this._map.on('mousemove', (e) => {this._update(e.point)});
+            this._map.on('touchmove', (e) => {this._update(e.point)});
+            this._map.on('mouseout', () => {DOM.setDisplay(this._container, `none`)});
+            this._map.on('mouseover', () => {DOM.setDisplay(this._container, `flex`)});
+        }
+
+        else this._map.on('move', this._update);
 
         /**
          * Fired when the popup is opened manually or programatically.
@@ -187,7 +188,7 @@ export default class Popup extends Evented {
     }
 
     /**
-     * Sets the geographical location of the popup's anchor, and moves the popup to it.
+     * Sets the geographical location of the popup's anchor, and moves the popup to it. Replaces trackCursor() behavior
      *
      * @param lnglat The geographical location to set as the popup's anchor.
      * @returns {Popup} `this`
@@ -209,7 +210,7 @@ export default class Popup extends Evented {
     }
 
     /**
-     * Tracks the popup to the cursor position. replaces the setLngLat behavior
+     * Tracks the popup anchor to the cursor position. Replaces the setLngLat behavior
      *
      * @returns {Popup} `this`
      */
@@ -220,6 +221,8 @@ export default class Popup extends Evented {
             this._map.off('move', this._update);
             this._map.on('mousemove', (e) =>{this._update(e.point)});
             this._map.on('touchmove', (e) =>{this._update(e.point)});
+            this._map.on('mouseout', this.remove);
+
         }
 
         return this;
@@ -295,7 +298,6 @@ export default class Popup extends Evented {
         }
 
         this._content = DOM.create('div', 'mapboxgl-popup-content', this._container);
-
         if (this.options.closeButton) {
             this._closeButton = DOM.create('button', 'mapboxgl-popup-close-button', this._content);
             this._closeButton.type = 'button';
@@ -303,6 +305,7 @@ export default class Popup extends Evented {
             this._closeButton.innerHTML = '&#215;';
             this._closeButton.addEventListener('click', this._onClickClose);
         }
+
     }
 
     _update(cursor: PointLike) {
@@ -357,7 +360,6 @@ export default class Popup extends Evented {
         }
 
         const offsetedPos = pos.add(offset[anchor]).round();
-
         DOM.setTransform(this._container, `${anchorTranslate[anchor]} translate(${offsetedPos.x}px,${offsetedPos.y}px)`);
         applyAnchorClass(this._container, anchor, 'popup');
     }
