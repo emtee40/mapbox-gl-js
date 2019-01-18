@@ -79,7 +79,7 @@ export default class Popup extends Evented {
     _closeButton: HTMLElement;
     _tip: HTMLElement;
     _lngLat: LngLat;
-    _trackCursor: Boolean;
+    _trackCursor: boolean;
     _pos: ?Point;
 
     constructor(options: PopupOptions) {
@@ -104,13 +104,11 @@ export default class Popup extends Evented {
         this._update();
 
         if (this._trackCursor) {
-            this._map.on('mousemove', (e) => {this._update(e.point)});
-            this._map.on('touchmove', (e) => {this._update(e.point)});
-            this._map.on('mouseout', () => {DOM.setDisplay(this._container, `none`)});
-            this._map.on('mouseover', () => {DOM.setDisplay(this._container, ``)});
-        }
-
-        else this._map.on('move', this._update);
+            this._map.on('mousemove', (e) => { this._update(e.point); });
+            this._map.on('touchmove', (e) => { this._update(e.point); });
+            this._map.on('mouseout', () => { DOM.setDisplay(this._container, `none`); });
+            this._map.on('mouseover', () => { DOM.setDisplay(this._container, ``); });
+        } else this._map.on('move', this._update);
 
         /**
          * Fired when the popup is opened manually or programatically.
@@ -199,8 +197,8 @@ export default class Popup extends Evented {
 
         if (this._map) {
             this._map.on('move', this._update);
-            this._map.off('mousemove')
-            this._map.off('touchmove')
+            this._map.off('mousemove');
+            this._map.off('touchmove');
         }
 
         this._trackCursor = false;
@@ -219,8 +217,8 @@ export default class Popup extends Evented {
         this._pos = null;
         if (this._map) {
             this._map.off('move', this._update);
-            this._map.on('mousemove', (e) =>{this._update(e.point)});
-            this._map.on('touchmove', (e) =>{this._update(e.point)});
+            this._map.on('mousemove', (e) => { this._update(e.point); });
+            this._map.on('touchmove', (e) => { this._update(e.point); });
             this._map.on('mouseout', this.remove);
 
         }

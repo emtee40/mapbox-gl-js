@@ -489,10 +489,10 @@ test('Cursor-tracked popup can be repositioned with setLngLat', (t) => {
     const popup = new Popup()
         .setText("Test")
         .trackCursor()
-        .setLngLat([0,0])
+        .setLngLat([0, 0])
         .addTo(map);
 
-    t.deepEqual(popup._pos, map.project([0,0]));
+    t.deepEqual(popup._pos, map.project([0, 0]));
     t.end();
 });
 
@@ -500,11 +500,11 @@ test('Positioned popup can be set to track cursor', (t) => {
     const map = createMap(t);
     const popup = new Popup()
         .setText("Test")
-        .setLngLat([0,0])
+        .setLngLat([0, 0])
         .trackCursor()
         .addTo(map);
 
-    mousemove(map.getCanvas(), {screenX:0, screenY:0})
+    mousemove(map.getCanvas(), {screenX:0, screenY:0});
     t.deepEqual(popup._pos, {x:0, y:0});
     t.end();
 });
@@ -516,7 +516,7 @@ test('Cursor-tracked popup is hidden on mouseout and reappears on mouseover', (t
         .setText("Test")
         .trackCursor()
         .addTo(map);
-    
+
     mouseout(map.getCanvas());
     t.equal(popup._container.style.display, 'none');
 
