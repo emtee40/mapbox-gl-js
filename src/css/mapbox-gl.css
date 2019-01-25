@@ -446,6 +446,15 @@ a.mapboxgl-ctrl-logo.mapboxgl-compact {
     border-bottom-right-radius: 0;
 }
 
+.mapboxgl-popup-track-pointer {
+    display: none;
+    pointer-events: none;
+}
+
+.mapboxgl-map:hover .mapboxgl-popup-track-pointer {
+    display: flex;
+}
+
 .mapboxgl-marker {
     position: absolute;
     top: 0;

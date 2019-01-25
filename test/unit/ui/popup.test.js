@@ -4,7 +4,7 @@ import { createMap as globalCreateMap } from '../../util';
 import Popup from '../../../src/ui/popup';
 import LngLat from '../../../src/geo/lng_lat';
 import Point from '@mapbox/point-geometry';
-import { click, mouseout, mouseover, mousemove } from 'mapbox-gl-js-test/simulate_interaction';
+import { click, mousemove } from 'mapbox-gl-js-test/simulate_interaction';
 
 const containerWidth = 512;
 const containerHeight = 512;
@@ -473,18 +473,18 @@ test('Cursor-tracked popup disappears on mouseout', (t) => {
 });
 
 
-test('Cursor-tracked popup is visible', (t) => {
+test('Pointer-tracked popup is tagged with right class', (t) => {
     const map = createMap(t);
     const popup = new Popup()
         .setText("Test")
         .trackPointer()
         .addTo(map);
 
-    t.equal(popup._container.style.display, '');
+    t.equal(popup._container.classList.value.includes('mapboxgl-popup-track-pointer'), true);
     t.end();
 });
 
-test('Cursor-tracked popup can be repositioned with setLngLat', (t) => {
+test('Pointer-tracked popup can be repositioned with setLngLat', (t) => {
     const map = createMap(t);
     const popup = new Popup()
         .setText("Test")
@@ -496,7 +496,18 @@ test('Cursor-tracked popup can be repositioned with setLngLat', (t) => {
     t.end();
 });
 
-test('Positioned popup can be set to track cursor', (t) => {
+test('Positioned popup lacks pointer-tracking class', (t) => {
+    const map = createMap(t);
+    const popup = new Popup()
+        .setText("Test")
+        .setLngLat([0, 0])
+        .addTo(map);
+
+    t.equal(popup._container.classList.value.includes('mapboxgl-popup-track-pointer'), false);
+    t.end();
+});
+
+test('Positioned popup can be set to track pointer', (t) => {
     const map = createMap(t);
     const popup = new Popup()
         .setText("Test")
@@ -508,24 +519,6 @@ test('Positioned popup can be set to track cursor', (t) => {
     t.deepEqual(popup._pos, {x:0, y:0});
     t.end();
 });
-
-test('Cursor-tracked popup is hidden on mouseout and reappears on mouseover', (t) => {
-    const map = createMap(t);
-
-    const popup = new Popup()
-        .setText("Test")
-        .trackPointer()
-        .addTo(map);
-
-    mouseout(map.getCanvas());
-    t.equal(popup._container.style.display, 'none');
-
-    mouseover(map.getCanvas());
-    t.equal(popup._container.style.display, '');
-
-    t.end();
-});
-
 
 test('Popup closes on Map#remove', (t) => {
     const map = createMap(t);

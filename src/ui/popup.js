@@ -105,8 +105,7 @@ export default class Popup extends Evented {
 
         if (this._trackPointer) {
             this._map.on('mousemove', (e) => { this._update(e.point); });
-            this._map.on('mouseout', () => { DOM.setDisplay(this._container, `none`); });
-            this._map.on('mouseover', () => { DOM.setDisplay(this._container, ``); });
+            this._container.classList.add('mapboxgl-popup-track-pointer');
         } else this._map.on('move', this._update);
 
         /**
@@ -196,6 +195,10 @@ export default class Popup extends Evented {
         if (this._map) {
             this._map.on('move', this._update);
             this._map.off('mousemove');
+            this._map.off('mouseout');
+            this._map.off('mouseover');
+            this._container.classList.remove('mapboxgl-popup-track-pointer');
+
         }
 
         this._trackPointer = false;
@@ -212,10 +215,11 @@ export default class Popup extends Evented {
     trackPointer() {
         this._trackPointer = true;
         this._pos = null;
+
         if (this._map) {
             this._map.off('move', this._update);
             this._map.on('mousemove', (e) => { this._update(e.point); });
-            this._map.on('mouseout', this.remove);
+            this._container.classList.add('mapboxgl-popup-track-pointer');
         }
 
         return this;
@@ -313,6 +317,7 @@ export default class Popup extends Evented {
                 this.options.className.split(' ').forEach(name =>
                     this._container.classList.add(name));
             }
+
         }
 
         if (this._map.transform.renderWorldCopies && !this._trackPointer) {
