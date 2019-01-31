@@ -251,7 +251,7 @@ class LineBucket implements Bucket {
         this.distance = 0;
 
         const beginCap = cap,
-            endCap = isPolygon ? 'butt' : cap;
+            endCap = isPolygon ? 'round' : cap;
         let startOfLine = true;
         let currentVertex;
         let prevVertex = ((undefined: any): Point);
