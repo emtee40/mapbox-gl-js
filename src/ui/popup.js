@@ -107,6 +107,7 @@ export default class Popup extends Evented {
             this._map.on('mousemove', (e) => { this._update(e.point) });
             this._map.on('mouseup', (e) => { this._update(e.point) });
             this._container.classList.add('mapboxgl-popup-track-pointer');
+            this._map._canvasContainer.classList.add('mapboxgl-track-pointer');
         } else this._map.on('move', this._update);
 
         /**
@@ -197,7 +198,7 @@ export default class Popup extends Evented {
             this._map.on('move', this._update);
             this._map.off('mousemove');
             this._container.classList.remove('mapboxgl-popup-track-pointer');
-
+            this._map._canvasContainer.classList.remove('mapboxgl-track-pointer');
         }
 
         this._trackPointer = false;
@@ -220,6 +221,7 @@ export default class Popup extends Evented {
             this._map.on('mousemove', (e) => { this._update(e.point); });
             this._map.on('drag', (e) => { this._update(e.point); });
             this._container.classList.add('mapboxgl-popup-track-pointer');
+            this._map._canvasContainer.classList.add('mapboxgl-track-pointer');
         }
 
         return this;

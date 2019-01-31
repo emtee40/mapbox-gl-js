@@ -25,6 +25,11 @@
     user-select: none;
 }
 
+.mapboxgl-canvas-container.mapboxgl-interactive.mapboxgl-track-pointer {
+    cursor: pointer;
+}
+
+
 .mapboxgl-canvas-container.mapboxgl-interactive:active,
 .mapboxgl-ctrl-group > button.mapboxgl-ctrl-compass:active {
     cursor: -webkit-grabbing;
